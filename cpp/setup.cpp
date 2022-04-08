@@ -1,24 +1,3 @@
-#include "main.h"
-
-struct Resource {
-    std::string name;
-    int value;
-    int in_use = 0;
-};
-
-struct Job {
-    std::string job_name;
-    int busy_time;
-    int idle_time;
-    int resources_length = 0;
-    Resource* resources = new Resource[resources_length];
-};
-
-int RESOURCES_LENGTH = 0;
-struct Resource* RESOURCES = new Resource[RESOURCES_LENGTH];
-int JOBS_LENGTH = 0;
-struct Job* JOBS = new Job[JOBS_LENGTH];
-
 void growGlobalJobsList(){
     Job* temp = new Job[JOBS_LENGTH + 1];
     std::copy(JOBS, JOBS + JOBS_LENGTH, temp);
@@ -206,8 +185,4 @@ int processInputFile(std::string file_name){
 
     newfile.close();
     return -2;
-}
-
-int main() {
-    processInputFile("example.txt");
 }
