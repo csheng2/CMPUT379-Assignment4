@@ -3,7 +3,6 @@
 struct Resource {
     std::string name;
     int value;
-    int in_use = 0;
 };
 
 struct Job {
@@ -12,12 +11,16 @@ struct Job {
     int idle_time;
     int resources_length = 0;
     Resource* resources = new Resource[resources_length];
+    int run_counter = 0;
+    int wait_time = 0;
 };
 
 int RESOURCES_LENGTH = 0;
 struct Resource* RESOURCES = new Resource[RESOURCES_LENGTH];
 int JOBS_LENGTH = 0;
 struct Job* JOBS = new Job[JOBS_LENGTH];
+sem_t SEMAPHORE;
+pthread_t* TID;
 
 void growGlobalJobsList(){
     Job* temp = new Job[JOBS_LENGTH + 1];
@@ -208,6 +211,40 @@ int processInputFile(std::string file_name){
     return -2;
 }
 
+void* getResources(void* args){
+    sem_wait(&SEMAPHORE);
+
+    printf("getting resources\n");
+
+    Job job = *(Job*) args;
+
+    job.run_counter++;
+
+    std::cout << "job: " << job.job_name << " (tid= 140214559033088, " << " iter= " << job.run_counter << ", time= 600 msec)" << std::endl;
+
+    sleep(job.busy_time / 1000);
+
+    sem_post(&SEMAPHORE);
+}
+
+void iterJobs(){
+    sem_init(&SEMAPHORE, 0, 1);
+    int ret;
+
+    for(int i = 0; i < JOBS_LENGTH; i++){
+
+        Job* job = &JOBS[i];
+        ret = pthread_create(&TID[i], NULL, &getResources, job);
+
+        if(ret != 0){
+            std::cout << "Error: failed to create thread for job: " <<  JOBS[i].job_name << std::endl;
+        }
+
+    }
+
+    sem_destroy(&SEMAPHORE);
+}
+
 int main(int argc, char *argv[]) {
 
     if(argc < 4){
@@ -216,12 +253,13 @@ int main(int argc, char *argv[]) {
     }
 
     std::string input_file = argv[1];
-    int monitor_time = atoi(argv[2]);
+    //int monitor_time = atoi(argv[2]);
     int NITER = atoi(argv[3]);
 
     processInputFile(input_file);
+    TID = new pthread_t[JOBS_LENGTH];
 
     for(int i = 0; i < NITER; i++){
-
+        iterJobs();
     }
 }

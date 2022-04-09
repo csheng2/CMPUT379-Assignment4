@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/student/Desktop/379-assignments/CMPUT379-Assignment4'
+g++ -Wall -pthread -std=c++11 -c cpp/main.cpp
+g++ -Wall -pthread -std=c++11 main.o -o a4w22
+make: Leaving directory '/home/student/Desktop/379-assignments/CMPUT379-Assignment4'
+ 

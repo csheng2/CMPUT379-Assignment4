@@ -6,5 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <unistd.h>
+
+#include <pthread.h>
+#include <semaphore.h>
 
 #endif
